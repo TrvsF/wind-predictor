@@ -1,0 +1,1 @@
+predicting the wind with an esp32 & a anemometer

@@ -1,4 +1,5 @@
 from machine import Pin, ADC, Timer, RTC
+from simpleio import map_range
 import time
 
 filename = ""
@@ -20,6 +21,10 @@ def stop():
 
     timer.deinit()
 
+def get_speed(val):
+    voltage_val = val / 65535 * 3.3
+    return map_range(voltage_val, 0.4, 2, 0, 32.4)
+
 def printspeed(args):
     global pot
     global rtc
@@ -32,9 +37,11 @@ def printspeed(args):
     secs = localtime[6]
     xtime = (hour, mins, secs)
     voltage = pot.read()
+    windspeed = get_speed(voltage)
 
     with open(f"{filename}", "a", encoding="utf-8") as file:
-        file.write(f"{voltage}:{xtime}\n")
+        file.write(f"{windspeed}:{xtime}\n")
+        
     print(pot.read())
     print(xtime)
 

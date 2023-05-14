@@ -1,5 +1,4 @@
 from machine import Pin, ADC, Timer, RTC
-from simpleio import map_range
 import time
 
 filename = ""
@@ -14,7 +13,7 @@ def start():
     date = rtc.datetime()
     filename = f"{date[4]}-{date[5]}-{date[6]}.txt"
 
-    timer.init(period=500, mode=Timer.PERIODIC, callback=printspeed)
+    timer.init(period=30000, mode=Timer.PERIODIC, callback=print_speed)
 
 def stop():
     global timer
@@ -23,30 +22,36 @@ def stop():
 
 def get_speed(val):
     voltage_val = val / 65535 * 3.3
-    return map_range(voltage_val, 0.4, 2, 0, 32.4)
+    return voltage_val
 
-def printspeed(args):
+def print_speed(args):
     global pot
     global rtc
     global filename
-
-    # get time & assign to xtime
+    # time
     localtime = rtc.datetime()
     hour = localtime[4]
-    mins = localtime[5]
-    secs = localtime[6]
-    xtime = (hour, mins, secs)
+    min = localtime[5]
+    sec = localtime[6]
+    # xtime = (hour, min, sec)
+    vartime = get_timevar(hour, min)
+
+    # wind speed
     voltage = pot.read()
     windspeed = get_speed(voltage)
 
+    # write to file
     with open(f"{filename}", "a", encoding="utf-8") as file:
-        file.write(f"{windspeed}:{xtime}\n")
+        file.write(f"{windspeed}:{vartime}\n")
         
-    print(pot.read())
-    print(xtime)
+    # print to console
+    print(f"speed: {windspeed} time: {vartime}")
 
-def settime(month, day, hour, min, second, weekday=0):
+def set_time(month, day, hour, min, second, weekday=0):
     global rtc
 
     # TODO : system for weekday
     rtc.datetime((2023, month, day, weekday, hour, min, second, 0))
+
+def get_timevar(hour, min):
+    return hour * 100 + min

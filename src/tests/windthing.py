@@ -1,5 +1,4 @@
 from machine import Pin, ADC, Timer, RTC
-import time
 
 filename = ""
 rtc     = RTC()

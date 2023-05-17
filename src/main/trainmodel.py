@@ -63,6 +63,6 @@ if __name__ == "__main__":
     model = get_trainedmodel(showgraph=True)
     save_model(model)
 
-    p = tf.constant([[1600, 2.0, 1.4, 1.9]])
+    p = tf.constant([[1500, 2.0, 1.4, 1.9]])
     prediction = model.predict(p)
     print("prediction:", prediction)

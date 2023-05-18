@@ -1,13 +1,15 @@
 from machine import Pin, ADC, Timer, RTC
 
+# past wind speeds
+pastspeeds = []
 # output filename
 filename = ""
 # store current time
-rtc     = RTC()
+rtc = RTC()
 # timer to run method 
-timer   = Timer(0)
+timer = Timer(0)
 # pins
-pot     = ADC(Pin(4))
+pot = ADC(Pin(4))
 pot.atten(ADC.ATTN_11DB)
 
 # ------------
@@ -32,10 +34,10 @@ def start():
     global filename
 
     date = rtc.datetime()
-    # hour-min-second.txt
+    # day-hour-min.txt
     filename = f"{date[3]}-{date[4]}-{date[5]}.txt"
 
-    timer.init(period=30000, mode=Timer.PERIODIC, callback=print_speed)
+    timer.init(period=3000, mode=Timer.PERIODIC, callback=print_speed)
 
 def stop():
     global timer
@@ -54,11 +56,15 @@ def print_speed(args):
 
     # wind speed
     voltage = pot.read()
-    windspeed = get_speed(voltage)
+    windspeed = round(get_speed(voltage), 2)
+
+    if len(pastspeeds) > 2:
+        pastspeeds.pop(0)
+    pastspeeds.append(float(windspeed))
 
     # write to file
     with open(f"{filename}", "a", encoding="utf-8") as file:
         file.write(f"{windspeed}:{vartime}\n")
         
     # print to console
-    print(f"speed: {windspeed} time: {vartime}")
+    print(f"past speeds: {pastspeeds} current speed: {windspeed} time: {vartime}")

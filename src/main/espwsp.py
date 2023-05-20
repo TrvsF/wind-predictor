@@ -58,7 +58,7 @@ def print_speed(args):
     voltage = pot.read()
     windspeed = round(get_speed(voltage), 2)
 
-    if len(pastspeeds) > 2:
+    if len(pastspeeds) > 3:
         pastspeeds.pop(0)
     pastspeeds.append(float(windspeed))
 
@@ -67,4 +67,4 @@ def print_speed(args):
         file.write(f"{windspeed}:{vartime}\n")
         
     # print to console
-    print(f"past speeds: {pastspeeds} current speed: {windspeed} time: {vartime}")
+    print(f"past speeds: {pastspeeds[:-1]} current speed: {windspeed} time: {vartime}")
